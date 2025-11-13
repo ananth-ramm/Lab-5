@@ -1,0 +1,70 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Calculator & Fake Store API",
+    "description": "API for Calculator and Fake eCommerce Store"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "tags": [
+    { "name": "Calculator", "description": "Calculator operations" },
+    { "name": "Products", "description": "Fake eCommerce Products" }
+  ],
+  "paths": {
+    "/calculator/add": {
+      "get": {
+        "tags": ["Calculator"],
+        "summary": "Add two numbers",
+        "parameters": [
+          { "name": "num1", "in": "query", "required": true, "type": "number" },
+          { "name": "num2", "in": "query", "required": true, "type": "number" }
+        ],
+        "responses": { "200": { "description": "Sum of numbers" } }
+      }
+    },
+    "/calculator/subtract": {
+      "get": {
+        "tags": ["Calculator"],
+        "summary": "Subtract two numbers",
+        "parameters": [
+          { "name": "num1", "in": "query", "required": true, "type": "number" },
+          { "name": "num2", "in": "query", "required": true, "type": "number" }
+        ],
+        "responses": { "200": { "description": "Difference of numbers" } }
+      }
+    },
+    "/calculator/multiply": {
+      "get": {
+        "tags": ["Calculator"],
+        "summary": "Multiply two numbers",
+        "parameters": [
+          { "name": "num1", "in": "query", "required": true, "type": "number" },
+          { "name": "num2", "in": "query", "required": true, "type": "number" }
+        ],
+        "responses": { "200": { "description": "Product of numbers" } }
+      }
+    },
+    "/calculator/divide": {
+      "get": {
+        "tags": ["Calculator"],
+        "summary": "Divide two numbers",
+        "parameters": [
+          { "name": "num1", "in": "query", "required": true, "type": "number" },
+          { "name": "num2", "in": "query", "required": true, "type": "number" }
+        ],
+        "responses": { "200": { "description": "Quotient of numbers" } }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Fetch fake store products",
+        "responses": { "200": { "description": "List of products" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server-Side Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        input { margin: 5px; padding: 5px; font-size: 16px; width: 80px; }
+        button { margin: 5px; padding: 5px 15px; font-size: 16px; }
+        #result { font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Server-Side Calculator</h2>
+
+    <label>Number 1: <input type="text" id="num1" /></label>
+    <label>Number 2: <input type="text" id="num2" /></label><br>
+
+    <button class="operationBtn" data-op="add">Add</button>
+    <button class="operationBtn" data-op="subtract">Subtract</button>
+    <button class="operationBtn" data-op="multiply">Multiply</button>
+    <button class="operationBtn" data-op="divide">Divide</button>
+
+    <div id="result"></div>
+
+    <script>
+        const buttons = document.querySelectorAll('.operationBtn');
+        const resultDiv = document.getElementById('result');
+
+        buttons.forEach(button => {
+        button.addEventListener('click', () => {
+        const num1 = document.getElementById('num1').value;
+        const num2 = document.getElementById('num2').value;
+        const operation = button.getAttribute('data-op');
+
+        if (num1 === "" || num2 === "" || isNaN(num1) || isNaN(num2)) {
+        resultDiv.innerText = "Please enter valid numbers in both fields.";
+        return;
+        }
+
+        fetch(`/calculator/${operation}?num1=${num1}&num2=${num2}`)
+        .then(res => res.json())
+        .then(data => {
+        if (data.error) {
+        resultDiv.innerText = "Error: " + data.error;
+        } else {
+        resultDiv.innerText = `Result: ${data.result}`;
+        }
+        })
+        .catch(err => {
+        resultDiv.innerText = "Error connecting to server.";
+        console.error(err);
+        });
+        });
+        });
+    </script>
+</body>
+</html>
