@@ -2,52 +2,100 @@ const express = require('express');
 const router = express.Router();
 
 let friends = [
-    { id: 1, name: 'Aaron', age: 25 },
-    { id: 2, name: 'Daniel', age: 30 },
-    { id: 3, name: 'Nancy', age: 22 },
-    { id: 4, name: 'Eric', age: 28 },
+    { id: 1, name: "Aaron", age: 25 },
+    { id: 2, name: "Daniel", age: 30 },
+    { id: 3, name: "Nancy", age: 22 },
+    { id: 4, name: "Eric", age: 28 }
 ];
 
+router.get('/', (req, res) => {
+    res.status(200).json(friends);
+});
+
 router.get('/filter', (req, res) => {
-    const letter = req.query.letter;
-    if (!letter) {
-        return res.status(400).json({ error: 'Query parameter "letter" is required' });
+    const { letter, age } = req.query;
+
+    if (letter) {
+        const results = friends.filter(f =>
+            f.name.toLowerCase().startsWith(letter.toLowerCase())
+        );
+        return res.status(200).json(results);
     }
-    const filtered = friends.filter(friend => friend.name.toLowerCase().startsWith(letter.toLowerCase()));
-    res.json(filtered);
+
+    if (age) {
+        const targetAge = Number(age);
+        const results = friends.filter(f => f.age === targetAge);
+        return res.status(200).json(results);
+    }
+
+    res.status(400).json({
+        message: "Please use either ?letter=A or ?age=25 when filtering."
+    });
 });
 
 router.get('/info', (req, res) => {
-    const { 'user-agent': userAgent, 'content-type': contentType, accept } = req.headers;
-    res.json({ 'user-agent': userAgent, 'content-type': contentType, accept });
+    const headerInfo = {
+        'user-agent': req.headers['user-agent'],
+        'content-type': req.headers['content-type'],
+        accept: req.headers['accept']
+    };
+    res.status(200).json(headerInfo);
 });
 
 router.get('/:id', (req, res) => {
-    const friendId = parseInt(req.params.id);
-    const friend = friends.find(f => f.id === friendId);
+    const id = Number(req.params.id);
+    const friend = friends.find(f => f.id === id);
+
     if (!friend) {
-        return res.status(404).json({ error: `Friend with id ${friendId} not found` });
+        return res.status(404).json({ error: `No friend found with id ${id}` });
     }
-    res.json(friend);
+
+    res.status(200).json(friend);
+});
+
+router.post('/', (req, res) => {
+    const { name, age } = req.body;
+
+    if (!name || !age) {
+        return res.status(400).json({
+            error: "New friend must include BOTH name and age."
+        });
+    }
+
+    const newEntry = {
+        id: friends.length + 1,
+        name,
+        age
+    };
+
+    friends.push(newEntry);
+    res.status(201).json(newEntry);
 });
 
 router.put('/:id', (req, res) => {
-  const friendId = parseInt(req.params.id);
-  const updatedData = req.body || {}; 
+    const id = Number(req.params.id);
+    const index = friends.findIndex(f => f.id === id);
 
-  const friend = friends.find(f => f.id === friendId);
-  if (!friend) {
-    return res.status(404).json({ error: `Friend with id ${friendId} not found.` });
-  }
+    if (index === -1) {
+        return res.status(404).json({ error: `Friend with id ${id} not found.` });
+    }
 
-  if (!updatedData.name && !updatedData.age) {
-    return res.status(400).json({ error: 'Please provide a name or age to update.' });
-  }
+    const updated = req.body;
 
-  if (updatedData.name) friend.name = updatedData.name;
-  if (updatedData.age) friend.age = updatedData.age;
+    if (!updated.name || !updated.age) {
+        return res.status(400).json({
+            error: "PUT request must include BOTH name and age."
+        });
+    }
 
-  res.status(200).json(friend);
+    friends[index] = {
+        id,
+        name: updated.name,
+        age: updated.age
+    };
+
+    res.status(200).json(friends[index]);
 });
+
 
 module.exports = router;
